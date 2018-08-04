@@ -1,0 +1,4 @@
+couchdb/couchdb.pid
+server/node_modules
+server/pic
+client/Pods
