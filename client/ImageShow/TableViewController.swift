@@ -30,11 +30,15 @@ class TableViewController: UITableViewController {
     var data = [CellData]()
 
     func loadFromServer() {
+        print("TableViewController::loadFromServer")
         data = []
         RemoteAccess.get("picturegroups", jsonReturnType: [JsonResult].self) { data in
             for jsonResult in data {
                 for pic in jsonResult.picture_ref {
-                    let cd = CellData.init(imageUUID: pic, message: pic, image: nil)
+                    print("adding pic \(pic)")
+                    let url = URL(string: "http://192.168.1.152:3000/api/v1/pictures/\(pic)?height=200")
+                    let dataImage = try! Data(contentsOf: url!)
+                    let cd = CellData.init(imageUUID: pic, message: pic, image: UIImage(data: dataImage))
                     self.data.append(cd)
                 }
             }
@@ -44,28 +48,17 @@ class TableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 250
+        // tableView.rowHeight = UITableViewAutomaticDimension
+        // tableView.estimatedRowHeight = 250
         loadFromServer()
         self.tableView.register(CustomCell.self, forCellReuseIdentifier: "custom")
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("TableViewController::tableView::cellForRowAt")
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "custom") as! CustomCell
         if let image = data[indexPath.row].image {
             cell.mainImage = image
-        } else {
-            DispatchQueue.global().async() {
-                let imageUUID = self.data[indexPath.row].imageUUID;
-                let url = URL(string: "https://image.oglimmer.de/api/v1/pictures/\(imageUUID)?height=200")
-                let dataImage = try! Data(contentsOf: url!)
-                DispatchQueue.main.async {
-                    self.data[indexPath.row].image = UIImage(data: dataImage)
-                    self.tableView.beginUpdates()
-                    cell.mainImage = self.data[indexPath.row].image!
-                    self.tableView.endUpdates()
-                }
-            }
         }
         cell.messsage = data[indexPath.row].message
         cell.layoutSubviews()

@@ -14,6 +14,10 @@ struct PictureGroupsSummaryResponse : Decodable {
     let name : String
 }
 
+enum ValiationError: Error {
+    case newGroupEmptyName
+}
+
 class AddImageViewController: UIViewController,
     UIImagePickerControllerDelegate,
     UINavigationControllerDelegate,
@@ -114,9 +118,10 @@ class AddImageViewController: UIViewController,
     }
     
     @IBAction func onSaveClicked(_ sender: Any) {
+        do {
         let imageData = UIImageJPEGRepresentation(imagePicked.image!, 1)
                 
-        let url = URL(string: "https://image.oglimmer.de/api/v1/pictures")!
+        let url = URL(string: "http://192.168.1.152:3000/api/v1/pictures")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("Bearer \(GlobalUserData.access_token!)", forHTTPHeaderField: "authorization")
@@ -127,6 +132,9 @@ class AddImageViewController: UIViewController,
             let groupRef = self.existingGroups[selectedRow]._id
             request.addValue(groupRef, forHTTPHeaderField: "x_groupref")
         } else {
+            if self.newGroupName.text!.isEmpty {
+                throw ValiationError.newGroupEmptyName
+            }
             request.addValue(self.newGroupName.text!, forHTTPHeaderField: "x_grouprefname")
         }
         request.addValue("image/jpeg", forHTTPHeaderField: "content-type")
@@ -160,6 +168,12 @@ class AddImageViewController: UIViewController,
             }
         }
         task.resume()
+        }
+        catch {
+            let alert = UIAlertController(title: "Error while saving", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
 

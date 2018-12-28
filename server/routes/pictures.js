@@ -102,7 +102,7 @@ router.post('/', async (req, res, next) => {
     const pathToFile = path.join(pathToFolder, pictureUUID);
     await mkdirp(pathToFolder);
 
-    const writeResult = await writeFile(pathToFile, req.body);
+    writeFile(pathToFile, req.body);
     
     res.send(newPicObj);
   } catch (err) {

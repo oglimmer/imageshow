@@ -12,7 +12,7 @@ import Foundation
 class RemoteAccess {
     
     static func get<T: Decodable>(_ area : String, jsonReturnType type : T.Type, completion completionFunc: @escaping (T) -> Void) {
-        let url = URL(string: "https://image.oglimmer.de/api/v1/\(area)")!
+        let url = URL(string: "http://192.168.1.152:3000/api/v1/\(area)")!
         var request = URLRequest(url: url)
         request.addValue("Bearer \(GlobalUserData.access_token!)", forHTTPHeaderField: "authorization")
         let task = URLSession.shared.dataTask(with: request) { respData, response, error in
@@ -47,7 +47,7 @@ class RemoteAccess {
     
     
     static func post<T: Decodable>(_ area : String, jsonReturnType type : T.Type, postData imageData : Data, additionalHeaders headers : [String: String], completion completionFunc: @escaping (T) -> Void) {
-        let url = URL(string: "https://image.oglimmer.de/api/v1/\(area)")!
+        let url = URL(string: "http://192.168.1.152:3000/api/v1/\(area)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("Bearer \(GlobalUserData.access_token!)", forHTTPHeaderField: "authorization")

@@ -45,7 +45,7 @@ class RegisterViewController: UIViewController {
         
         let postBody = "email=\(email)&password=\(password)".data(using: String.Encoding.utf8)
         
-        var request = URLRequest(url: URL(string: "https://image.oglimmer.de/api/v1/users")!)
+        var request = URLRequest(url: URL(string: "http://192.168.1.152:3000/api/v1/users")!)
         request.httpMethod = "POST"
         let task = URLSession.shared.uploadTask(with: request, from: postBody) { respData, response, error in
             if let error = error {
